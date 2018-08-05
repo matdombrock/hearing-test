@@ -1,0 +1,57 @@
+
+<script
+src="https://code.jquery.com/jquery-3.3.1.min.js"
+integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+crossorigin="anonymous"></script>
+<div class="main" >
+<input type="range" min="20" max="20000" value="500" class="slider" id="freq"><br>
+<input type="text" id="readout" value="500" style="max-width:64px;">hz
+<hr>
+<button onclick="start()">start</button>
+<button onclick="stop()">stop</button>
+
+</div>
+<script>
+var context = new AudioContext();
+var o = context.createOscillator();
+var  g = context.createGain();
+function start(){
+    var frequency = document.getElementById("freq").value; 
+    o = context.createOscillator();
+    g = context.createGain();
+    o.frequency.value = frequency;
+    o.type = "sine";
+    o.connect(g);
+    g.connect(context.destination);
+    o.start(0);
+}
+
+function stop(){
+    o.connect(g);
+    g.connect(context.destination);
+    g.gain.exponentialRampToValueAtTime(
+        0.00001, context.currentTime + 0.04
+    );
+}
+function change(value){
+    o.frequency.value = value;
+}
+
+var slider = document.getElementById("freq");
+slider.oninput = function() {
+    change(this.value);
+    $("#readout").val(this.value);
+}
+var readout = document.getElementById("readout");
+readout.oninput = function() {
+    change(this.value);
+    $("#freq").val(this.value);
+}
+</script>
+<style>
+    body{
+        text-align:center;
+        background:rgb(0, 162, 255);
+        color:white;
+    }
+</style>
